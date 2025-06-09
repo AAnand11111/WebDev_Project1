@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forest</title>
+  <!-- Added Google Font for better typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Additional Styles -->
+  <style>
+    /* FIXED NAVBAR STYLES */
+    .navbar {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      padding: 20px 10px;
+      border-radius: 20px;
+      width: 60px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(144, 238, 144, 0.1);
+      z-index: 900;
+    }
+
+    .navbar:hover {
+      width: 180px;
+      box-shadow: 0 0 20px rgba(144, 238, 144, 0.2);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+      color: white;
+      white-space: nowrap;
+      transition: transform 0.2s ease, background 0.3s;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    .nav-item:hover {
+      background: rgba(144, 238, 144, 0.1);
+      transform: translateX(5px);
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      filter: brightness(0) invert(1);
+      transition: transform 0.3s ease;
+    }
+
+    .nav-item:hover .icon {
+      transform: scale(1.15);
+    }
+
+    .nav-text {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .navbar:hover .nav-text {
+      opacity: 1;
+    }
+
+    /* CHAT SUPPORT STYLES START */
+    .chat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #4CAF50;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .chat-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .chat-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  /* Remove filter to see original colors */
+  /* filter: brightness(0) invert(1); */
+  display: block; /* Ensures it's visible */
+  border: 2px solid white; /* Helps visibility */
+}
+
+    .chat-panel {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 320px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      transform-origin: bottom right;
+      transform: scale(0);
+      opacity: 0;
+      z-index: 999;
+      border: 1px solid rgba(144, 238, 144, 0.2);
+    }
+
+    .chat-panel.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .chat-header {
+      background: #4CAF50;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-title img {
+      width: 24px;
+      height: 24px;
+      background-color: white;
+      border-radius: 50%;
+      padding: 3px;
+    }
+
+    .chat-title h3 {
+      margin: 0;
+      color: white;
+      font-weight: 500;
+    }
+
+    .close-chat {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .close-chat:hover {
+      transform: scale(1.1);
+    }
+
+    .chat-messages {
+      height: 250px;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 15px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .bot-message {
+      background-color: rgba(76, 175, 80, 0.2);
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+    }
+
+    .user-message {
+      background-color: rgba(255, 255, 255, 0.1);
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .message-input {
+      flex: 1;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      outline: none;
+      transition: background 0.3s ease;
+    }
+
+    .message-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .message-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .send-button {
+      background: #4CAF50;
+      border: none;
+      border-radius: 20px;
+      color: white;
+      padding: 0 15px;
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+
+    .send-button:hover {
+      background: #45a049;
+    }
+
+    @media (max-width: 768px) {
+      .chat-panel {
+        width: 280px;
+        bottom: 80px;
+        right: 10px;
+      }
+    }
+    /* CHAT SUPPORT STYLES END */
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-item">
+      <img src="icons/home.svg" alt="Home" class="icon" />
+      <span class="nav-text">Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="icons/search.svg" alt="Search" class="icon" />
+      <span class="nav-text">Search</span>
+    </div>
+    <div class="nav-item">
+      <img src="icons/envelope.svg" alt="Message" class="icon" />
+      <span class="nav-text">Message</span>
+    </div>
+    <div class="nav-item">
+      <img src="icons/user.svg" alt="User" class="icon" />
+      <span class="nav-text">User</span>
+    </div>
+    <div class="nav-item">
+      <img src="icons/marker.svg" alt="Location" class="icon" />
+      <span class="nav-text">Location</span>
+    </div>
+    <div class="nav-item">
+      <img src="icons/cross.svg" alt="Close" class="icon" />
+      <span class="nav-text">Close</span>
+    </div>
+  </nav>
+
+  <div class="welcome-box">
+    <h1>Welcome to <span class="highlight">The Forest</span></h1>
+    <p>
+      Step into a world where nature meets calm.<br/>
+      This is your serene escape—a place to think, build, and breathe.<br/>
+      Let the forest guide your flow.
+    </p>
+  </div>
+
+ <!-- Change this in your HTML -->
+<div class="chat-button" id="chatButton">
+  <img src="https://thumbs.dreamstime.com/z/cute-cartoon-baby-fox-sitting-happily-perfect-children-s-books-illustrations-greeting-cards-adorable-illustration-371211355.jpg?ct=jpeg" alt="Chat Support" class="chat-icon">
+</div>
+
+  <!-- Chat Panel -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <div class="chat-title">
+        <img src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%234CAF50%22 stroke=%22%234CAF50%22 stroke-width=%221%22><path d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z%22/></svg>" alt="Leaf">
+        <h3>Assistant Foxie</h3>
+      </div>
+      <button class="close-chat" id="closeChat">×</button>
+    </div>
+    <div class="chat-messages">
+      <div class="message bot-message">
+        Welcome! How can I help you today?
+      </div>
+      <div class="message user-message">
+        I'd like to learn more about this forest.
+      </div>
+      <div class="message bot-message">
+        The Forest is a serene digital space designed to help you focus, create, and find peace. Hover over the sidebar to explore more sections!
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" class="message-input" placeholder="Type your message..." id="messageInput">
+      <button class="send-button">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Simple non-functioning chat panel toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatButton = document.getElementById('chatButton');
+      const chatPanel = document.getElementById('chatPanel');
+      const closeChat = document.getElementById('closeChat');
+      
+      chatButton.addEventListener('click', function() {
+        chatPanel.classList.toggle('active');
+      });
+      
+      closeChat.addEventListener('click', function() {
+        chatPanel.classList.remove('active');
+      });
+      
+      // Just for demonstration - this doesn't actually send messages
+      const sendButton = document.querySelector('.send-button');
+      const messageInput = document.getElementById('messageInput');
+      
+      sendButton.addEventListener('click', function() {
+        if (messageInput.value.trim() !== '') {
+          messageInput.value = '';
+        }
+      });
+      
+      messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && messageInput.value.trim() !== '') {
+          messageInput.value = '';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
